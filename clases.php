@@ -13,14 +13,14 @@
             private $cod;
             private $enunciado;
             private $respuesta;
-            private $preguntas_mostradas=[];//Donde se van a almacenar las preguntas que ya se han mostrado, para que no se repitan
+            private $preguntas_mostradas="";//Donde se van a almacenar las preguntas que ya se han mostrado, para que no se repitan
 
             public function __construct($db,$cod="", $pm="", $enun="", $res=""){
                 $this->bd=$db;
                 $this->cod=$cod;
                 $this->enunciado=$enun;
                 $this->respuesta=$res;
-                if($pm != "") $this->preguntas_mostradas = $pm;
+                $this->preguntas_mostradas = $pm;
             }
 
 
@@ -40,12 +40,14 @@
                 if($codMax<1){//Comprobar que haya preguntas en la bd
                     echo "No hay preguntas en la base de datos";
                 }else{
+                    $array = explode(",", $this->preguntas_mostradas);
                     
                     //El número se sigue generando hasta que no esté incluido dentro del array de las preguntas que ya se han mostrado
                     do{
                         $codRandom=random_int(1,$codMax);//Generar el número random
-                    }while(in_array($codRandom,$this->preguntas_mostradas));//Se comprueba si el número generado está dentro del array con las preguntas mostradas, si devuelve true es que ya existe y por lo tanto se tiene qie generar otro número
+                    }while(in_array($codRandom,$array));//Se comprueba si el número generado está dentro del array con las preguntas mostradas, si devuelve true es que ya existe y por lo tanto se tiene qie generar otro número
                     
+                    $this->preguntas_mostradas .= ",".$codRandom;
                     
 
 
@@ -83,10 +85,10 @@
 
                     
                     if(strtolower(trim($resBd))==strtolower(trim($resUsuario))){
-                        // echo "Correcto, se pasa a la siguiente pregunta";
+                        echo "Correcto, se pasa a la siguiente pregunta";
                         $comprobar=true;
                     }else{
-                        // echo "Se repite la pregunta hasta que el usuario la acierte";
+                        echo "Se repite la pregunta hasta que el usuario la acierte";
                         $comprobar=false;
                     }
 
@@ -99,11 +101,10 @@
 
 
             public function __toString(){
-                $preguntasMostradasStr = implode(',', $this->preguntas_mostradas);
                 $str = '<form action="#" method="post" enctype="multipart/form-data">
                             <p>'. $this->enunciado.'</p>
                             <input type="hidden" name="codPA" value="'.$this->cod . '">
-                            <input type="hidden" name="pMostradas" value="' . $preguntasMostradasStr . '">
+                            <input type="hidden" name="pMostradas" value="' . $this->preguntas_mostradas . '">
                             <input type="text" name="res"><br>
                             <input type="submit" value="Enviar" name="env1">
                         </form>';
