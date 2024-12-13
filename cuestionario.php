@@ -18,7 +18,7 @@
         }
         
 
-    
+        $cont=0;
         
         //USUARIOS
         if(isset($_POST["env"])){
@@ -40,13 +40,21 @@
             ';
         }
 
-
+        // do{
         if(isset($_POST['env1'])){
-            $preg = new preguntas($db, $_POST['codPA'], $_POST['pMostradas']);
-
-            if($preg->comprobarRespuesta($_POST['res']))
-                $preg->get_pregunta();
+                $preg = new preguntas($db, $_POST['codPA'], $_POST['pMostradas']);
+                
+                if($preg->comprobarRespuesta($_POST['res'])){
+                        $preg->llegar_tope();
+                        $preg->get_pregunta();
+                        
+                }else{
+                    $preg->repetir_pregunta($_POST['codPA']);
+                }
+            
+                
         }
+    // }while($cont<5);
 
         // if(isset($_POST["env".$preg->get_cod()])){
         //     if($preg->comprobarRespuesta($_POST['res'],$_POST['codPreguntaActual'])){

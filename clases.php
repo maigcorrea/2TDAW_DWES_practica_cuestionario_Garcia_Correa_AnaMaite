@@ -14,6 +14,7 @@
             private $enunciado;
             private $respuesta;
             private $preguntas_mostradas="";//Donde se van a almacenar las preguntas que ya se han mostrado, para que no se repitan
+            // $cont=0; //Contador
 
             public function __construct($db,$cod="", $pm="", $enun="", $res=""){
                 $this->bd=$db;
@@ -37,18 +38,20 @@
                 $cons->fetch();
                 $cons->close();
 
+                
+
                 if($codMax<1){//Comprobar que haya preguntas en la bd
                     echo "No hay preguntas en la base de datos";
                 }else{
                     $array = explode(",", $this->preguntas_mostradas);
-                    
+                    // echo count($array)."Primer Count";
                     //El número se sigue generando hasta que no esté incluido dentro del array de las preguntas que ya se han mostrado
                     do{
                         $codRandom=random_int(1,$codMax);//Generar el número random
                     }while(in_array($codRandom,$array));//Se comprueba si el número generado está dentro del array con las preguntas mostradas, si devuelve true es que ya existe y por lo tanto se tiene qie generar otro número
                     
                     $this->preguntas_mostradas .= ",".$codRandom;
-                    
+                    // $cont+=1;
 
 
                     //Generar la consulta del enunciado a partir del num random
@@ -70,6 +73,42 @@
             }
 
 
+            //Método para repetir la pregunta si el usuario falla
+            function repetir_pregunta($cod){
+                $sent="SELECT enunciado FROM preguntas WHERE cod=?;";//El código es dinámico
+
+                $cons=$this->bd->prepare($sent);
+                $cons->bind_param("i",$cod);
+                $cons->execute();
+                $cons->bind_result($this->enunciado);
+
+                $cons->fetch();
+                
+
+                $cons->close(); 
+                // Retornar el objeto con echo para mostrarlo con __toString()
+                echo $this;
+            }
+
+
+
+            function llegar_tope(){
+                $array = explode(",", $this->preguntas_mostradas);
+                echo $this->preguntas_mostradas;
+                // if($cont==5){
+                //     echo "Fin";
+                // }
+                if(count($array)==6){
+                    // foreach ($array as $value) {
+                    //     echo $value."<br>";
+                    // }
+                    
+                    echo "Fin. Se redirige a la página de ranking";
+                    header("Location:ranking.php");
+                }
+            }
+
+
             // public function pasar_str_numero(){
 
             // }
@@ -83,13 +122,22 @@
                     $cons->bind_result($resBd);
                     $cons->fetch();
 
+                    $array = explode(",", $this->preguntas_mostradas);
                     
                     if(strtolower(trim($resBd))==strtolower(trim($resUsuario))){
                         echo "Correcto, se pasa a la siguiente pregunta";
                         $comprobar=true;
+                        // echo count($array);
+                        // foreach ($array as  $value) {
+                        //     echo $value."<br>";
+                        // }
                     }else{
                         echo "Se repite la pregunta hasta que el usuario la acierte";
                         $comprobar=false;
+                        // echo count($array);
+                        // foreach ($array as  $value) {
+                        //     echo $value."<br>";
+                        // }
                     }
 
                     return $comprobar;
