@@ -23,11 +23,14 @@
         //USUARIOS
         if(isset($_POST["env"])){
             //Se inserta el usuario
+            $nombre=$_POST["nom"];
             $user=new usuarios($db,$_POST["nom"]);
             $user->insertarUsuarioTiempo();
 
             $preg=new preguntas($db);           
-            $preg->get_pregunta();
+            $preg->get_pregunta($nombre);
+            // $time=date("Y-m-d H:i:s");
+            // $user->insertarTFinal($time);
 
             //Salen las preguntas
         }else if(!isset($_POST['env1'])){
@@ -40,13 +43,17 @@
             ';
         }
 
-        // do{
         if(isset($_POST['env1'])){
                 $preg = new preguntas($db, $_POST['codPA'], $_POST['pMostradas']);
                 
+                $nombre = $_POST["nom"]; // Recupera el nombre del formulario
+                $user=new usuarios($db,$nombre);//Generar usuario con el mismo nombre que el usuario que se generó en el registro
+
+                $time=date("Y-m-d H:i:s");
+                $user->insertarTFinal($time);//Utilizar el usuario creado para ir actualizando el tiempo en el que finaliza cada pregunta, de forma que en la última pregunta obtengo el tiempo total que ha tardado
                 if($preg->comprobarRespuesta($_POST['res'])){
                         $preg->llegar_tope();
-                        $preg->get_pregunta();
+                        $preg->get_pregunta($nombre);
                         
                 }else{
                     $preg->repetir_pregunta($_POST['codPA']);
@@ -54,6 +61,8 @@
             
                 
         }
+
+
     // }while($cont<5);
 
         // if(isset($_POST["env".$preg->get_cod()])){

@@ -15,13 +15,15 @@
             private $respuesta;
             private $preguntas_mostradas="";//Donde se van a almacenar las preguntas que ya se han mostrado, para que no se repitan
             // $cont=0; //Contador
+            private $nom;
 
-            public function __construct($db,$cod="", $pm="", $enun="", $res=""){
+            public function __construct($db,$cod="", $pm="", $enun="", $res="",$n=""){
                 $this->bd=$db;
                 $this->cod=$cod;
                 $this->enunciado=$enun;
                 $this->respuesta=$res;
                 $this->preguntas_mostradas = $pm;
+                $this->nom=$n;
             }
 
 
@@ -29,7 +31,7 @@
                 return $this->cod;
             }
 
-            public function get_pregunta(){
+            public function get_pregunta($n){ //Le paso el nombre del usuario para asignarlo como una propiedad más del objeto, y así poder pasarselo luego al método toString
                 //Generar un número random
                 $sent="SELECT MAX(cod) from preguntas;";//Consultar cuantas preguntas hay en la bd para saber el límite máximo del num random
                 $cons=$this->bd->prepare($sent);
@@ -39,7 +41,8 @@
                 $cons->close();
 
                 
-
+                echo $n;
+                $this->nom=$n;
                 if($codMax<1){//Comprobar que haya preguntas en la bd
                     echo "No hay preguntas en la base de datos";
                 }else{
@@ -102,7 +105,12 @@
                     // foreach ($array as $value) {
                     //     echo $value."<br>";
                     // }
-                    
+                    // $usuario = new usuarios($this->bd); // Pasar la base de datos 
+                    // $nomUsu=$usuario->getNombre();
+
+                    // $usuario = new usuarios($this->bd, $nomUsu); 
+                    // $usuario->insertarTFinal(); // Registrar el tiempo final
+
                     echo "Fin. Se redirige a la página de ranking";
                     header("Location:ranking.php");
                 }
@@ -148,10 +156,11 @@
             }
 
 
-            public function __toString(){
+            public function __toString(){//El campo oculto del nombre es para luego en cuestionario.php, en cada pregunta poder generarme un nuevo usuario cuyo nombre sea igual al introducido en el registro, e ir actualizando el tiempo de finalización
                 $str = '<form action="#" method="post" enctype="multipart/form-data">
                             <p>'. $this->enunciado.'</p>
                             <input type="hidden" name="codPA" value="'.$this->cod . '">
+                            <input type="hidden" name="nom" value="'.$this->nom.'">
                             <input type="hidden" name="pMostradas" value="' . $this->preguntas_mostradas . '">
                             <input type="text" name="res"><br>
                             <input type="submit" value="Enviar" name="env1">
@@ -175,6 +184,11 @@
             }
 
 
+            // public function __setFinal($fin){
+            //     $this->tFinal=$nom;
+            // }
+
+
             public function insertarUsuarioTiempo(){
                 if($this->check_usuario($this->nombre)){
                     $sent="INSERT INTO usuarios(nombre) VALUES (?);";//No hay que pasarle dos parámetros ?,? haciendo referencia la nombre y al tiempo en el que empieza, porque el tiempo, al estar predeterminado en la bd como current_timesptamp(), va a manejarlo automáticamente MySQL, es decir, lo va a insertar automáticamente
@@ -193,6 +207,25 @@
                     header("Location:cuestionario.php?mensaje=2");
                     exit();
                 }
+                
+            }
+
+            public function getNombre() {
+                return $this->nombre;
+            }        
+
+
+            public function insertarTFinal($time){
+                echo "Nombre del usuario: " . $this->nombre;
+                // echo($time);
+                $sent="UPDATE usuarios SET tFinal=? WHERE nombre=?;";
+                $cons=$this->bd->prepare($sent);
+                // $t = time();
+                $cons->bind_param("ss",$time,$this->nombre);
+                $cons->execute();
+
+
+                $cons->close();
                 
             }
 
@@ -240,7 +273,18 @@
                 $str = " <br>".$this->nombre;
                 return $str;
             }
+
+
+
+
+            // public function obtener_ranking(){
+            //     $sent="SELECT nombre,tFinal from usuarios";
+
+
+            // }
         }
+
+
     ?>
 </body>
 </html>

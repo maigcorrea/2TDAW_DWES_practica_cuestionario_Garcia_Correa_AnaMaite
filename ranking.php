@@ -10,6 +10,10 @@
 
     <?php
         require_once "clases.php";
+        $d=date("Y-m-d H:i:s");
+        // $tiempo=time();
+        // echo $tiempo;
+        echo "<br>".$d;
         
     ?>
 </body>
