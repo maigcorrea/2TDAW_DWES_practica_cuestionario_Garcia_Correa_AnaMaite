@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="./estilos/style.css">
 </head>
 <body>
     <?php
@@ -16,7 +15,6 @@
             private $enunciado;
             private $respuesta;
             private $preguntas_mostradas="";//Donde se van a almacenar las preguntas que ya se han mostrado, para que no se repitan
-            // $cont=0; //Contador
             private $nom;
 
             public function __construct($db,$cod="", $pm="", $enun="", $res="",$n=""){
@@ -33,6 +31,8 @@
                 return $this->cod;
             }
 
+
+            //Función para obtener las preguntas
             public function get_pregunta($n){ //Le paso el nombre del usuario para asignarlo como una propiedad más del objeto, y así poder pasarselo luego al método toString
                 //Generar un número random
                 $sent="SELECT MAX(cod) from preguntas;";//Consultar cuantas preguntas hay en la bd para saber el límite máximo del num random
@@ -43,20 +43,18 @@
                 $cons->close();
 
                 
-                // echo $n;
                 $this->nom=$n;
                 if($codMax<1){//Comprobar que haya preguntas en la bd
                     echo "No hay preguntas en la base de datos";
                 }else{
                     $array = explode(",", $this->preguntas_mostradas);
-                    // echo count($array)."Primer Count";
+                    
                     //El número se sigue generando hasta que no esté incluido dentro del array de las preguntas que ya se han mostrado
                     do{
                         $codRandom=random_int(1,$codMax);//Generar el número random
                     }while(in_array($codRandom,$array));//Se comprueba si el número generado está dentro del array con las preguntas mostradas, si devuelve true es que ya existe y por lo tanto se tiene qie generar otro número
                     
                     $this->preguntas_mostradas .= ",".$codRandom;
-                    // $cont+=1;
 
 
                     //Generar la consulta del enunciado a partir del num random
@@ -68,7 +66,6 @@
                     $cons->bind_result($this->cod, $this->enunciado);
 
                     $cons->fetch();
-                    // $this->preguntas_mostradas = $codRandom." ";//Añadir el código al array para comprobar que no se repita
 
                     $cons->close(); 
                     // Retornar el objeto con echo para mostrarlo con __toString()
@@ -78,7 +75,7 @@
             }
 
 
-            //Método para repetir la pregunta si el usuario falla
+            //Función para repetir la pregunta si el usuario falla
             function repetir_pregunta($cod){
                 $sent="SELECT enunciado FROM preguntas WHERE cod=?;";//El código es dinámico
 
@@ -97,31 +94,17 @@
 
 
 
+            //Función para redirigir al ranking cuando se hayan contestado 5 preguntas
             function llegar_tope(){
                 $array = explode(",", $this->preguntas_mostradas);
-                // echo $this->preguntas_mostradas;
-                // if($cont==5){
-                //     echo "Fin";
-                // }
                 if(count($array)==6){
-                    // foreach ($array as $value) {
-                    //     echo $value."<br>";
-                    // }
-                    // $usuario = new usuarios($this->bd); // Pasar la base de datos 
-                    // $nomUsu=$usuario->getNombre();
-
-                    // $usuario = new usuarios($this->bd, $nomUsu); 
-                    // $usuario->insertarTFinal(); // Registrar el tiempo final
-
                     echo "Fin. Se redirige a la página de ranking";
                     header("Location:ranking.php");
                 }
             }
 
 
-            // public function pasar_str_numero(){
-
-            // }
+            //Función para comprobar la respuesta del usuario
             public function comprobarRespuesta($resUsuario){
                 $sent = "SELECT respuesta FROM preguntas WHERE cod = ?;";
                 $comprobar;
@@ -137,17 +120,10 @@
                     if(strtolower(trim($resBd))==strtolower(trim($resUsuario))){
                         echo "<p class='msj'>Correcto, se pasa a la siguiente pregunta</p>";
                         $comprobar=true;
-                        // echo count($array);
-                        // foreach ($array as  $value) {
-                        //     echo $value."<br>";
-                        // }
+
                     }else{
                         echo "<p class='msj'>Ooops! Has fallado</p>";
                         $comprobar=false;
-                        // echo count($array);
-                        // foreach ($array as  $value) {
-                        //     echo $value."<br>";
-                        // }
                     }
 
                     return $comprobar;
@@ -158,6 +134,7 @@
             }
 
 
+            //Función para mostrar las preguntas
             public function __toString(){//El campo oculto del nombre es para luego en cuestionario.php, en cada pregunta poder generarme un nuevo usuario cuyo nombre sea igual al introducido en el registro, e ir actualizando el tiempo de finalización
                 $str = '
                         <div id="registro-container">
@@ -192,43 +169,29 @@
             }
 
 
-            // public function __setFinal($fin){
-            //     $this->tFinal=$nom;
-            // }
-
-
+            //Función para insertar usuario y tiempo de inicio, que se inserta automáticamente
             public function insertarUsuarioTiempo(){
                 if($this->check_usuario($this->nombre)){
                     $sent="INSERT INTO usuarios(nombre) VALUES (?);";//No hay que pasarle dos parámetros ?,? haciendo referencia la nombre y al tiempo en el que empieza, porque el tiempo, al estar predeterminado en la bd como current_timesptamp(), va a manejarlo automáticamente MySQL, es decir, lo va a insertar automáticamente
 
                     $cons=$this->bd->prepare($sent);
-                    // $t = time();
                     $cons->bind_param("s",$this->nombre);
                     $cons->execute();
 
 
                     $cons->close();
 
-                    // header("Location:cuestionario.php?mensaje=1");
-                    // exit(); //El exit() sirve para asegurarse de que el script se detenga y no siga ejecutandose
                 }else{
                     header("Location:cuestionario.php?mensaje=2");
                     exit();
                 }
-                
-            }
-
-            public function getNombre() {
-                return $this->nombre;
-            }        
+            }    
 
 
-            public function insertarTFinal($time){
-                // echo "Nombre del usuario: " . $this->nombre;
-                // echo($time);
+            //Función para insertar el tiempo final
+            public function insertarTFinal($time){;
                 $sent="UPDATE usuarios SET tFinal=? WHERE nombre=?;";
                 $cons=$this->bd->prepare($sent);
-                // $t = time();
                 $cons->bind_param("ss",$time,$this->nombre);
                 $cons->execute();
 
@@ -239,9 +202,8 @@
 
 
 
-
+            //Función para comprobar si el usuario existe en la base de datos
             public function check_usuario($inputNom){
-
                 $sent="SELECT count(nombre) FROM usuarios WHERE nombre=?;"; //? indica que es un paraámetro dinámico, es decir, que será introducido más tarde y que puede ser un nombre diferente cada vez que se ejecute la consulta
 
                 try{
@@ -276,20 +238,14 @@
             }
 
 
-
+            //Función para mostrar el nombre de los usuarios
             public function __toString(){
                 $str = " <br>".$this->nombre;
                 return $str;
             }
 
 
-            // public function comparar_tiempos(){
-            //     $segInicio=strtotime($this->tEmpieza);
-            //     $segFinal=strtotime($this->tFinal);
-
-            //     $segTotales=$segFinal-$segInicio;
-            // }
-
+            //Función para obtener los datos de la tabla del ranking
             public function obtener_ranking(){
                 $sent="SELECT nombre,tEmpieza,tFinal from usuarios";
 

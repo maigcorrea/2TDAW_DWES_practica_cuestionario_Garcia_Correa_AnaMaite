@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="./style_ranking.css">
+    <link rel="stylesheet" href="./estilos/style_ranking.css">
 </head>
 <body>
     <h1>RANKING</h1>
@@ -25,6 +25,7 @@
 
         asort($lista_ranking);//Ordenar ranking de menor a mayor tiempo           
     ?>
+
     <!-- Crear tabla con los datos -->
      <div class="ranking-container">
         <div class="table-container">

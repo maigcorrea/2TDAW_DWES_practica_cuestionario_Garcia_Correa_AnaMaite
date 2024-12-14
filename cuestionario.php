@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-   <link rel="stylesheet" href="./style.css">
+   <link rel="stylesheet" href="./estilos/style.css">
 </head>
 <body>
     <?php
@@ -36,8 +36,6 @@
                 header("Location:cuestionario.php?mensaje=4");
             }
             
-            // $time=date("Y-m-d H:i:s");
-            // $user->insertarTFinal($time);
 
             //Salen las preguntas
         }else if(!isset($_POST['env1'])){
@@ -77,35 +75,11 @@
                         
                 }else{
                     $preg->repetir_pregunta($_POST['codPA']);
-                }
-            
-                
+                }          
         }
-
-
-    // }while($cont<5);
-
-        // if(isset($_POST["env".$preg->get_cod()])){
-        //     if($preg->comprobarRespuesta($_POST['res'],$_POST['codPreguntaActual'])){
-        //         //Pasar a la siguiente pregunta
-        //     }else{
-        //         //Repetir pregunta
-        //     }
-        // }
-
-        // if(isset($_POST["env1"]) && !isset($_POST["env"])){
-        //     $preg1=new preguntas($db);
-        //     $preg1->get_pregunta();
-        // }else if(isset($_POST["env"])){
-        //     $preg=new preguntas($db);
-        //     $preg->get_pregunta();
-        // }
-
 
         if(isset($_GET["mensaje"])){
             if($_GET["mensaje"]==0) echo "<p class='errBd'>Error de conexión con la Base de Datos</p>";
-            // if($_GET["mensaje"]==1) echo "<p class='msjExitoUsuario'>Usuario registrado correctamente</p>";
-            
         }
     ?>
 </body>
