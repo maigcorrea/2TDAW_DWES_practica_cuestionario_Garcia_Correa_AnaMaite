@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"> -->
 </head>
 <body>
     <?php
@@ -283,13 +283,44 @@
             }
 
 
+            // public function comparar_tiempos(){
+            //     $segInicio=strtotime($this->tEmpieza);
+            //     $segFinal=strtotime($this->tFinal);
 
-
-            // public function obtener_ranking(){
-            //     $sent="SELECT nombre,tFinal from usuarios";
-
-
+            //     $segTotales=$segFinal-$segInicio;
             // }
+
+            public function obtener_ranking(){
+                $sent="SELECT nombre,tEmpieza,tFinal from usuarios";
+
+                $cons=$this->bd->prepare($sent);
+                $cons->bind_result($this->nombre,$this->tEmpieza,$this->tFinal);
+                $cons->execute();
+
+
+                $datos=[];//Array donde almacenar el nombre del usuario y los segundos que ha tardado
+                while($cons->fetch()){
+                    //Pasar tiempo a segundos
+                    $segInicio=strtotime($this->tEmpieza);
+                    $segFinal=strtotime($this->tFinal);
+                    $segTotales;
+
+                    // Controlar por si alguna fecha está a null o no se ha establecido
+                    if ($segInicio && $segFinal) {
+                        $segTotales = $segFinal - $segInicio;
+                    } else {
+                        $segTotales = 0; // Valor por defecto si las fechas son inválidas
+                    }
+
+                    //Almacenar en array
+                    $datos[$this->nombre]=$segTotales;
+                }
+                
+                $cons->close();
+
+                return $datos;
+                
+            }
         }
 
 

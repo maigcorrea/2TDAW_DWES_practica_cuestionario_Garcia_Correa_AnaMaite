@@ -12,7 +12,6 @@ body{
     width: 100%;
 }
 
-
 #registro-container{
     all: unset;
     background: url(./img/wp3913041.webp);
@@ -45,7 +44,6 @@ form.registro{
     text-align: center;
     justify-content: center;
     font-family: Arial, Helvetica, sans-serif;
-
 }
 
 form.registro label{
@@ -58,7 +56,7 @@ form.registro input[type="text"]{
     all: unset;
     width: 80%;
     text-align: center;
-    margin-bottom: 50px;
+    margin-bottom: 20px;
     background-color: transparent;
     border-bottom:none;
     border-right: none;
@@ -68,7 +66,6 @@ form.registro input[type="text"]{
     padding: 10px;
     outline: none;
     color: whitesmoke;
-    /* margin: 10px 0; */
 }
 
 form.registro input[type="submit"]{
@@ -87,7 +84,15 @@ form.registro input[type="submit"]{
 p.msj{
     all:unset;
     position: absolute;
-    color: blueviolet;
+    padding: 10px;
+    top:20px;
+    left: 20px;
+    background-color: rgb(123, 175, 230);
+    color: black;
     z-index: 999;
     font-size: 40px;
+    border-radius: 15px;
+    border-color: aliceblue;
+    border: solid 3px aliceblue;
+    font-family: Arial, Helvetica, sans-serif;
 }
