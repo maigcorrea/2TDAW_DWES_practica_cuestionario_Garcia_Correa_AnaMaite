@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <?php
@@ -41,7 +43,7 @@
                 $cons->close();
 
                 
-                echo $n;
+                // echo $n;
                 $this->nom=$n;
                 if($codMax<1){//Comprobar que haya preguntas en la bd
                     echo "No hay preguntas en la base de datos";
@@ -97,7 +99,7 @@
 
             function llegar_tope(){
                 $array = explode(",", $this->preguntas_mostradas);
-                echo $this->preguntas_mostradas;
+                // echo $this->preguntas_mostradas;
                 // if($cont==5){
                 //     echo "Fin";
                 // }
@@ -133,14 +135,14 @@
                     $array = explode(",", $this->preguntas_mostradas);
                     
                     if(strtolower(trim($resBd))==strtolower(trim($resUsuario))){
-                        echo "Correcto, se pasa a la siguiente pregunta";
+                        echo "<p class='msj'>Correcto, se pasa a la siguiente pregunta</p>";
                         $comprobar=true;
                         // echo count($array);
                         // foreach ($array as  $value) {
                         //     echo $value."<br>";
                         // }
                     }else{
-                        echo "Se repite la pregunta hasta que el usuario la acierte";
+                        echo "<p class='msj'>Ooops! Has fallado</p>";
                         $comprobar=false;
                         // echo count($array);
                         // foreach ($array as  $value) {
@@ -157,14 +159,20 @@
 
 
             public function __toString(){//El campo oculto del nombre es para luego en cuestionario.php, en cada pregunta poder generarme un nuevo usuario cuyo nombre sea igual al introducido en el registro, e ir actualizando el tiempo de finalización
-                $str = '<form action="#" method="post" enctype="multipart/form-data">
-                            <p>'. $this->enunciado.'</p>
-                            <input type="hidden" name="codPA" value="'.$this->cod . '">
-                            <input type="hidden" name="nom" value="'.$this->nom.'">
-                            <input type="hidden" name="pMostradas" value="' . $this->preguntas_mostradas . '">
-                            <input type="text" name="res"><br>
-                            <input type="submit" value="Enviar" name="env1">
-                        </form>';
+                $str = '
+                        <div id="registro-container">
+                            <div class="form-registro">
+                                <form class="registro" action="#" method="post" enctype="multipart/form-data">
+                                    <p>'. $this->enunciado.'</p>
+                                    <input type="hidden" name="codPA" value="'.$this->cod . '">
+                                    <input type="hidden" name="nom" value="'.$this->nom.'">
+                                    <input type="hidden" name="pMostradas" value="' . $this->preguntas_mostradas . '">
+                                    <input type="text" name="res"><br>
+                                    <input type="submit" value="Enviar" name="env1">
+                                </form>
+                            </div>
+                        </div>
+                        ';
                 return $str;
             }
         }
@@ -216,7 +224,7 @@
 
 
             public function insertarTFinal($time){
-                echo "Nombre del usuario: " . $this->nombre;
+                // echo "Nombre del usuario: " . $this->nombre;
                 // echo($time);
                 $sent="UPDATE usuarios SET tFinal=? WHERE nombre=?;";
                 $cons=$this->bd->prepare($sent);
@@ -286,5 +294,6 @@
 
 
     ?>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

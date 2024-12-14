@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -22,24 +23,44 @@
         
         //USUARIOS
         if(isset($_POST["env"])){
-            //Se inserta el usuario
-            $nombre=$_POST["nom"];
-            $user=new usuarios($db,$_POST["nom"]);
-            $user->insertarUsuarioTiempo();
+            
+            if($_POST["nom"]!=""){
+                //Se inserta el usuario
+                $nombre=$_POST["nom"];
 
-            $preg=new preguntas($db);           
-            $preg->get_pregunta($nombre);
+                $user=new usuarios($db,$_POST["nom"]);
+                $user->insertarUsuarioTiempo();
+
+                $preg=new preguntas($db);           
+                $preg->get_pregunta($nombre);
+            }else{
+                header("Location:cuestionario.php?mensaje=4");
+            }
+            
             // $time=date("Y-m-d H:i:s");
             // $user->insertarTFinal($time);
 
             //Salen las preguntas
         }else if(!isset($_POST['env1'])){
             echo '
-                <form action="#" method="post" enctype="multipart/form-data">
-                    <label for="nom">Indica tu nombre:</label><br>
-                    <input type="text" name="nom" id=""><br>
-                    <input type="submit" value="Enviar" name="env">
-                </form>
+            <div id="registro-container">
+                <div class="form-registro">
+                    <form class="registro" action="#" method="post" enctype="multipart/form-data">
+                        <label>Bienvenid@!</label><br>
+                        <label for="nom">Introduce tu nombre</label><br>
+                        <input type="text" name="nom" id=""><br>';
+                        if(isset($_GET["mensaje"])){
+                            if($_GET["mensaje"]==2){
+                                echo "<p class='errYaRegistrado'>Error. El usuario ya está presente en la Base de Datos</p>";
+                            }
+                            if($_GET["mensaje"]==4) echo "<p class='inputVacio'>El campo está vacío</p>";
+                        }
+                        echo '
+                        <input type="submit" value="Enviar" name="env">
+                    </form>
+                </div>
+            </div>
+            
             ';
         }
 
@@ -85,9 +106,9 @@
         if(isset($_GET["mensaje"])){
             if($_GET["mensaje"]==0) echo "<p class='errBd'>Error de conexión con la Base de Datos</p>";
             // if($_GET["mensaje"]==1) echo "<p class='msjExitoUsuario'>Usuario registrado correctamente</p>";
-            if($_GET["mensaje"]==2) echo "<p class='errYaRegistrado'>Error. El usuario ya está presente en la Base de Datos</p>";
-            if($_GET["mensaje"]==3) echo "<p class='errUser'>El input está vacío</p>";
+            
         }
     ?>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
